@@ -1,0 +1,25 @@
+{
+  "name": "simple-task-app",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "mintah",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "aws-serverless-express": "^3.4.0",
+    "body-parser": "^1.20.3",
+    "connect-dynamodb": "^3.0.5",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "jsonwebtoken": "^9.0.2",
+    "openid-client": "^5.7.0",
+    "simple-task-app": "file:"
+  }
+}
