@@ -9,16 +9,17 @@ const checkAuth = (req, res, next) => {
 
 // Authentication middleware
 const authenticateAdmin = (req, res, next) => {
-    if (req.session.isAdmin) {
-      next();
+    if (req.session.adminInfo) {
+      req.isAuthenticated = true;
     } else {
       res.redirect('/admin/login');
     }
+    next();
   };
 
 // user
 const authenticateUser = (req, res, next) => {
-    if (req.session.isUser) {
+    if (req.session.userInfo && req.session.userInfo.email_verified) {
       next();
     } else {
       res.redirect('/user/login');

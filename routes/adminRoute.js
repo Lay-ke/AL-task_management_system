@@ -1,5 +1,5 @@
 const express = require('express');
-const {authenticateAdmin} = require('../middleware/auth');
+const {authenticateAdmin,checkAuth} = require('../middleware/auth');
 const router = express.Router();
 const AWS = require('aws-sdk');
 require('dotenv').config();
@@ -14,12 +14,18 @@ AWS.config.update({
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 // admin dashboard
-router.get('/admin/dashboard', async (req, res) => {
+router.get('/admin/dashboard', checkAuth, async (req, res) => {
   try {
     const tasks = await getAllTasks();
     const teamMembers = await getAllTeamMembers();
+    const userInfo = req.session.userInfo;
     
-    res.render('admin/dashboard', { tasks, teamMembers });
+    res.render('admin/dashboard', { 
+      userInfo,tasks,
+      teamMembers,
+      isAuthenticated: req.isAuthenticated,
+      userInfo: req.session.userInfo
+    });
   } catch (error) {
     res.status(500).send('Error fetching dashboard data');
   }

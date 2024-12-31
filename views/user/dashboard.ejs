@@ -91,7 +91,7 @@
       const status = document.getElementById('updateStatus').value;
 
       try {
-        const response = await fetch(`/user/tasks/${task_Id}/status`, {
+        const response = await fetch(`/tasks/${task_Id}/status`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
