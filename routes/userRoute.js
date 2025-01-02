@@ -1,9 +1,18 @@
 const express = require('express');
 const AWS = require('aws-sdk');
 const router = express.Router();
+const { checkAuth } = require('../middleware/auth');
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
+
+router.get('/', checkAuth, async (req, res) => {
+  res.render('index', { 
+    title: 'Serverless with Express and EJS',
+    isAuthenticated: req.isAuthenticated,
+    userInfo: req.session.userInfo
+});
+})
 
 router.get('/dashboard', async (req, res) => {
   console.log('User info in dash:', req.session.userInfo);
@@ -19,7 +28,7 @@ router.get('/dashboard', async (req, res) => {
 
   try {
     const result = await dynamodb.query(params).promise();
-    console.log('Tasks:', result);
+    // console.log('Tasks:', result);
     res.render('user/dashboard', { tasks: result.Items });
   } catch (error) {
     res.status(500).send('Error fetching tasks');
@@ -29,7 +38,7 @@ router.get('/dashboard', async (req, res) => {
 router.put('/tasks/:task_Id/status', async (req, res) => {
   const { task_Id } = req.params;
   const { status } = req.body;
-  
+
   const params = {
     TableName: 'Tasks',
     Key: { task_Id },

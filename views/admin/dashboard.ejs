@@ -13,13 +13,19 @@
           <h2>Welcome, <%= userInfo.username %></h2>
       </div>
     <% } %>
-    <button><a href="/admin-logout">Logout</a></button>
     
     <div class="flex justify-between items-center mb-8">
       <h1 class="text-3xl font-bold">Task Management Dashboard</h1>
-      <button onclick="openNewTaskModal()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Create New Task
-      </button>
+      <div class="flex items-center space-x-4">
+        <!-- Create New Task Button -->
+        <button onclick="openNewTaskModal()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Create New Task
+        </button>
+        <!-- Logout Button -->
+        <a href="/admin-logout" class="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
+          Logout
+        </a>
+      </div>
     </div>
 
     <!-- Task List -->

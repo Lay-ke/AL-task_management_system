@@ -9,7 +9,7 @@ const checkAuth = (req, res, next) => {
 
 // Authentication middleware
 const authenticateAdmin = (req, res, next) => {
-    if (req.session.adminInfo) {
+    if (req.session.userInfo) {
       req.isAuthenticated = true;
     } else {
       res.redirect('/admin/login');

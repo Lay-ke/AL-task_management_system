@@ -77,18 +77,7 @@ app.use(adminRoutes);
 app.use(userRoutes);
 
 // Define routes
-app.get('/', checkAuth,(req, res) => {
-    // console.log(req.session)
-    res.render('index', { 
-        title: 'Serverless with Express and EJS',
-        isAuthenticated: req.isAuthenticated,
-        userInfo: req.session.userInfo
-    });
-});
 
-app.get('/api', (req, res) => {
-    res.json({ message: "Hello from the serverless Express API!" });
-});
 
 // login route
 app.get('/login', (req, res) => {
@@ -119,6 +108,7 @@ const addTeamMember = async (userInfo) => {
         user_id: userInfo.sub ,  // Assuming 'username' is the partition key
         username: userInfo.username,        // Storing the email of the user
         email: userInfo.email,        // Storing the email of the user
+        subcribe_email: false,
         createdAt: new Date().toISOString(), // Timestamp of when the team member is added
       }
     };
@@ -132,30 +122,48 @@ const addTeamMember = async (userInfo) => {
     }
   };
 
+// function to find a team member
+const findUserById = async (Id) => {
+    const params = {
+        TableName: 'TeamMembers',
+        Key: {
+            user_id: Id // Assuming the email is the primary key in the DynamoDB table
+        }
+    };
 
-const addAdmin = async (adminInfo) => {
-  // Define the table name
-  const tableName = 'Admins';
-  
-  // Prepare the parameters for the put operation
-  const params = {
-    TableName: tableName,
-    Item: {
-      user_id: adminInfo.sub ,  // Assuming 'username' is the partition key
-      username: adminInfo.username,        // Storing the email of the user
-      email: adminInfo.email,        // Storing the email of the user
-      createdAt: new Date().toISOString(), // Timestamp of when the team member is added
+    try {
+        const result = await dynamodb.get(params).promise();
+        return result.Item; // If the user exists, it returns the user details
+    } catch (err) {
+        console.error('Error fetching user from DynamoDB:', err);
+        return null;
     }
-  };
-  
-  try {
-    // Use the DynamoDB DocumentClient to insert the item
-    const result = await dynamodb.put(params).promise();
-    console.log('Admin added successfully');
-  } catch (error) {
-    console.error('Error adding team member:', error);
-  }
 };
+
+
+// const addAdmin = async (adminInfo) => {
+//   // Define the table name
+//   const tableName = 'Admins';
+  
+//   // Prepare the parameters for the put operation
+//   const params = {
+//     TableName: tableName,
+//     Item: {
+//       user_id: adminInfo.sub ,  // Assuming 'username' is the partition key
+//       username: adminInfo.username,        // Storing the email of the user
+//       email: adminInfo.email,        // Storing the email of the user
+//       createdAt: new Date().toISOString(), // Timestamp of when the team member is added
+//     }
+//   };
+  
+//   try {
+//     // Use the DynamoDB DocumentClient to insert the item
+//     const result = await dynamodb.put(params).promise();
+//     console.log('Admin added successfully');
+//   } catch (error) {
+//     console.error('Error adding team member:', error);
+//   }
+// };
 
 // Helper function to get the path from the URL. Example: "http://localhost/hello" returns "/hello"
 function getPathFromURL(urlString) {
@@ -185,8 +193,18 @@ app.get(getPathFromURL('http://localhost:3000/auth/callback'), async (req, res) 
         // console.log('tokenSet:', tokenSet);
         const userInfo = await client1.userinfo(tokenSet.access_token);
         req.session.userInfo = userInfo;
-        addTeamMember(userInfo)
-        console.log("userInfo:",userInfo)
+
+        // Check if the user already exists in DynamoDB (based on email)
+        const existingUser = await findUserById(userInfo.sub);
+        console.log("existingUser:",existingUser)
+
+        if (!existingUser) {
+            // If the user doesn't exist, add them as a team member
+            addTeamMember(userInfo);
+            console.log('New user added:', userInfo);
+        } else {
+            console.log('User already exists, skipping addition.');
+        };
 
         res.redirect('/dashboard');
     } catch (err) {
@@ -199,7 +217,7 @@ app.get(getPathFromURL('http://localhost:3000/auth/callback'), async (req, res) 
 app.get('/logout', (req, res) => {
     req.session.destroy();
     const logoutUrl = `https://eu-west-1rncdsddby.auth.eu-west-1.amazoncognito.com/logout?client_id=iehkfrjqfvod1c3g7k73lhtvc&logout_uri=<logout uri>`;
-    res.redirect(logoutUrl);
+    res.redirect('/');
 });
 
 // admin authentication
@@ -241,7 +259,7 @@ app.get(getPathFromURL('http://localhost:3000/auth/admin'), async (req, res) => 
 
         const userInfo = await client2.userinfo(tokenSet.access_token);
         req.session.userInfo = userInfo;
-        console.log("adminInfo:",userInfo);
+        // console.log("adminInfo:",userInfo);
 
         res.redirect('/admin/dashboard');
     } catch (err) {
