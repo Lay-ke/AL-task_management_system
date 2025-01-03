@@ -284,5 +284,3 @@ app.listen(3000, () => {
 // exports.handler = (event, context) => {
 //     awsServerlessExpress.proxy(server, event, context);
 // };
-
-module.exports = {app};

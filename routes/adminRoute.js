@@ -79,7 +79,8 @@ router.post('/admin/tasks/create', async (req, res) => {
     const TOPIC_ARN = process.env.TOPIC_ARN;
     
 
-    if (checkSubcribe === "false") {
+    if (!checkSubcribe) {
+      console.log("Sending subscription confirmation message!")
       // Subscribe the user's email to the SNS topic (only if not already subscribed)
       const subscribeParams = {
       Protocol: 'email', // Set protocol to email
@@ -95,7 +96,7 @@ router.post('/admin/tasks/create', async (req, res) => {
       Key: { user_id: userProfile.user_id },
       UpdateExpression: 'set subcribe_email = :subcribe_email',
       ExpressionAttributeValues: {
-        ':subcribe_email': 'true'
+        ':subcribe_email': true
       }
       };
 
