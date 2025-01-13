@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+</head>
+<body>
+    <h1>Welcome to Serverless Express with EJS!</h1>
+    <p>This is a server-side rendered page!</p>
+    <% if (isAuthenticated) { %>
+        <div>
+            <h2>Welcome, <%= userInfo.username || userInfo.email %></h2>
+            <p>Here are some attributes you can use as a developer:</p>
+            <p><%= JSON.stringify(userInfo, null, 4) %></p>
+        </div>
+        <a href="/logout">Logout</a>
+    <% } else { %>
+        <p>Please log in to continue</p>
+        <a href="/login">Login</a>
+    <% } %>
+</body>
+</html>

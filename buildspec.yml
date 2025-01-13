@@ -1,0 +1,19 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo Building Lambda function...
+      - npm install --omit=dev  # Install only production dependencies
+      - du -sh *  # Lists sizes of all files and directories
+      - zip -r new_task_app.zip node_modules/ middleware/ views/ package-lock.json package.json server.js # Packaging Lambda code into a zip file
+      - aws s3 cp new_task_app.zip s3://test-mngt-code-build-2/new_task_app.zip
+      - echo "Build completed"
+  post_build:
+    commands:
+      - echo Updating lambda Function...
+      - aws lambda update-function-code --function-name new_task --s3-bucket test-mngt-code-build-2 --s3-key new_task_app.zip 
+      - echo Lambda DONE updating...
+artifacts:
+  files:
+    - new_task_app.zip  # The artifact to be deployed to Lambda
