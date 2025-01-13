@@ -33,6 +33,7 @@ aws configure
 ```
 
 ## 2. AWS Services Setup
+NB: You can create the services using either the AWS Management Console or the CLI. But with this setup we'll be using the AWS CLI
 
 ### Step 1: DynamoDB Setup
 
