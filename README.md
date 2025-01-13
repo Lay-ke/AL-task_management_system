@@ -1,4 +1,4 @@
-# AWS Services Setup and Connection Guide for Task Management System
+# Guide for Task Management System
 
 ## Prerequisites
 
