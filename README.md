@@ -1,4 +1,6 @@
-# Guide for Task Management System
+# Task Management System
+
+![task_management_image](public/task_mngt_diagram.png)
 
 ## Prerequisites
 
